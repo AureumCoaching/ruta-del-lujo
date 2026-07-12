@@ -1976,7 +1976,7 @@ function exportarJSON() {
 // ── Exportar PDF ──────────────────────────────────────────────────
 async function exportarPDFPerfil() {
   if(!window.jspdf?.jsPDF) {
-    alert('Necesitas conexión a internet para generar el PDF (jsPDF se carga desde CDN).');
+    alert('Necesitas conexion a internet para generar el PDF.');
     return;
   }
   guardarPerfil();
@@ -1990,99 +1990,150 @@ async function exportarPDFPerfil() {
   const sf = (n,s,st='normal') => { doc.setFont(n,st); doc.setFontSize(s); };
   const sc = ([r,g,b]) => doc.setTextColor(r,g,b);
   const fill = ([r,g,b]) => doc.setFillColor(r,g,b);
-  const line = (y) => { doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(14,y,W-14,y); };
+  const ln = (y) => { doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(14,y,W-14,y); };
   const wrap = (txt,x,y,mw,lh=5.5) => {
     if(!txt) return y;
     doc.splitTextToSize(String(txt),mw).forEach(l => { doc.text(l,x,y); y+=lh; });
     return y;
   };
+  const field = (label, value, x, y, w) => {
+    if(!value || value === '') return y;
+    sf('helvetica',7); sc(C.gl); doc.text(label.toUpperCase(), x, y); y+=5;
+    sf('helvetica',9); sc(C.gray); y=wrap(value, x, y, w||W-32); y+=4;
+    return y;
+  };
+  const section = (titulo, y) => {
+    fill(C.cream); doc.rect(14,y-4,W-28,7,'F');
+    sf('helvetica',7,'bold'); sc(C.rd); doc.text(titulo.toUpperCase(), 16, y);
+    ln(y+4); return y+10;
+  };
+  const newPage = () => {
+    doc.addPage();
+    fill(C.white); doc.rect(0,0,W,H,'F');
+    sf('helvetica',7); sc(C.rd);
+    doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(), 16, 18);
+    sf('helvetica',6); sc(C.gl);
+    doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
+    ln(22);
+    return 34;
+  };
 
-  // PORTADA
+  // ─ PORTADA ─────────────────────────────────────────────────────────────
   fill(C.cream); doc.rect(0,0,W,H,'F');
+  // Logo Aureum
+  const logoEl = document.querySelector('.mod-logo');
+  if(logoEl && logoEl.src && logoEl.src.startsWith('data:')) {
+    try { doc.addImage(logoEl.src, 'PNG', W/2-20, 18, 40, 16, '', 'FAST'); } catch(e) {}
+  }
   sf('helvetica',7); sc(C.gl);
-  doc.text('MÓDULO 01 · PERFIL DE MARCA · RUTA DEL LUJO', W/2,22,{align:'center'});
+  doc.text('MÓDULO 01 · PERFIL DE MARCA · RUTA DEL LUJO', W/2,42,{align:'center'});
   doc.setDrawColor(...C.rose); doc.setLineWidth(0.4);
-  doc.line(40,28,W-40,28);
+  doc.line(40,48,W-40,48);
   sf('helvetica',30); sc(C.gray);
-  doc.text(diagData.marca||'—', W/2,50,{align:'center'});
+  doc.text(diagData.marca||'—', W/2,68,{align:'center'});
   sf('helvetica',9); sc(C.gl);
-  doc.text('Perfil de Marca · Diagnóstico Estratégico', W/2,60,{align:'center'});
-  doc.setLineWidth(0.2); doc.line(60,68,W-60,68);
-  const meta=[['AUDITADO POR',diagData.nombre||'—'],['FECHA',new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'})],['METODOLOGÍA','Modelo de la Esmeralda™ · Aureum']];
-  let my=84;
-  meta.forEach(([l,v])=>{ sf('helvetica',7); sc(C.rd); doc.text(l,W/2,my,{align:'center'}); sf('helvetica',11); sc(C.gray); doc.text(v||'—',W/2,my+6,{align:'center'}); my+=18; });
+  doc.text('Perfil de Marca · Diagnóstico Estratégico · Ruta del Lujo', W/2,78,{align:'center'});
+  doc.setLineWidth(0.2); doc.line(60,86,W-60,86);
+  const meta=[
+    ['AUDITADO POR', diagData.nombre||'—'],
+    ['CARGO', diagData.cargo||'—'],
+    ['FECHA', new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'})],
+    ['METODOLOGÍA', 'Modelo de la Esmeralda™ · Aureum'],
+  ];
+  let my=100;
+  meta.forEach(([l,v])=>{
+    sf('helvetica',7); sc(C.rd); doc.text(l, W/2, my, {align:'center'});
+    sf('helvetica',10); sc(C.gray); doc.text(v||'—', W/2, my+5, {align:'center'});
+    my+=16;
+  });
   fill(C.rose); doc.rect(0,H-15,W,15,'F');
   sf('helvetica',7); sc(C.white);
   doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo · aureum.com.co', W/2,H-6,{align:'center'});
 
-  // PÁGINA 2: Datos del perfil
-  doc.addPage();
-  fill(C.white); doc.rect(0,0,W,H,'F');
-  sf('helvetica',7); sc(C.rd); doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(),16,18);
-  sf('helvetica',6); sc(C.gl); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo',W-16,18,{align:'right'});
-  line(22);
-  let py=34;
-  sf('helvetica',18); sc(C.gray); doc.text('01 · Perfil de Marca',16,py); py+=14;
+  // ─ PÁGINA 2: DATOS GENERALES ────────────────────────────────────────────
+  let py = newPage();
+  sf('helvetica',16); sc(C.gray); doc.text('01 · Datos Generales', 16, py); py+=12;
 
-  const rows=[
-    ['Marca evaluada',diagData.marca],['País de origen',diagData.pais],
-    ['Ciudad',diagData.ciudad],['Sector',diagData.sector||diagData.sector_otro],
-    ['Etapa actual',diagData.etapa],['Año de fundación',diagData.año],
-    ['Estructura legal',diagData.juridica],['N° empleados',diagData.empleados],
-  ].filter(([,v])=>v);
+  py = section('Identificación', py);
+  py = field('Marca evaluada',  diagData.marca,       16, py); 
+  py = field('País de origen',  diagData.pais,        16, py);
+  py = field('Ciudad',          diagData.ciudad,      16, py);
+  py = field('Año de fundación',diagData.año,         16, py);
+  py = field('Naturaleza jurídica', diagData.juridica, 16, py);
+  py = field('N° de empleados', diagData.empleados,   16, py);
+  py = field('Ventas anuales',  diagData.ventas,      16, py);
+  py += 4;
 
-  rows.forEach(([l,v])=>{
-    if(py>H-50) return;
-    sf('helvetica',7); sc(C.gl); doc.text(l.toUpperCase(),16,py); py+=5;
-    sf('helvetica',9); sc(C.gray); py=wrap(v,16,py,W-32); py+=4;
-  });
+  py = section('Responsable del diagnóstico', py);
+  py = field('Nombre',  diagData.nombre, 16, py);
+  py = field('Cargo',   diagData.cargo,  16, py);
+  py = field('Email',   diagData.email,  16, py);
+  py += 4;
 
-  // Canales digitales
-  const digital=[['Web',diagData.web],['Instagram',diagData.instagram],
-    ['Facebook',diagData.facebook],['LinkedIn',diagData.linkedin],
-    ['Otra red',diagData.otra_red]].filter(([,v])=>v);
-  if(digital.length && py<H-60) {
-    py+=4; line(py); py+=8;
-    sf('helvetica',8,'bold'); sc(C.rd); doc.text('CANALES DIGITALES',16,py); py+=8;
-    digital.forEach(([l,v])=>{ sf('helvetica',7); sc(C.gl); doc.text(l+':',16,py); sf('helvetica',9); sc(C.gray); py=wrap(v,40,py,W-56); py+=3; });
+  py = section('Clasificación', py);
+  py = field('Sector', (diagData.sector||'')+(diagData.sector_otro?' · '+diagData.sector_otro:''), 16, py);
+  py = field('Etapa actual', diagData.etapa, 16, py);
+  py = field('Estructura de negocio', diagData.estructura, 16, py);
+  py = field('¿Marca artesanal?', diagData.artesanal, 16, py);
+  py += 4;
+
+  sf('helvetica',7); sc(C.gl); doc.text('2', W-16, H-12, {align:'right'});
+
+  // ─ PÁGINA 3: ESTRATEGIA ────────────────────────────────────────────────
+  py = newPage();
+  sf('helvetica',16); sc(C.gray); doc.text('02 · Estrategia y Posicionamiento', 16, py); py+=12;
+
+  py = section('Canales digitales', py);
+  py = field('Sitio web',   diagData.web,       16, py);
+  py = field('Instagram',   diagData.instagram, 16, py);
+  py = field('Facebook',    diagData.facebook,  16, py);
+  py = field('LinkedIn',    diagData.linkedin,  16, py);
+  py = field('Otra red',    diagData.otra_red,  16, py);
+  py += 4;
+
+  py = section('Propuesta de valor y mercado', py);
+  py = field('Propuesta de valor', diagData.propuesta_valor, 16, py);
+  py += 2;
+  py = field('Mercado objetivo', diagData.mercado_objetivo, 16, py);
+  py += 2;
+  py = field('Propósito de marca', diagData.proposito||(diagData.proposito_otro||''), 16, py);
+  py += 4;
+
+  py = section('Metas y objetivos', py);
+  py = field('Objetivo del diagnóstico', diagData.objetivo, 16, py);
+  py += 2;
+  py = field('Meta a corto plazo', diagData.meta_corto, 16, py);
+  py += 2;
+  py = field('Meta a largo plazo', diagData.meta_largo, 16, py);
+  py += 4;
+
+  sf('helvetica',7); sc(C.gl); doc.text('3', W-16, H-12, {align:'right'});
+
+  // ─ PÁGINA 4: CONTEXTO Y RECURSOS ───────────────────────────────────────
+  py = newPage();
+  sf('helvetica',16); sc(C.gray); doc.text('03 · Contexto y Recursos', 16, py); py+=12;
+
+  py = section('Contexto de la marca', py);
+  py = field('Reconocimientos y certificaciones', diagData.reconocimientos, 16, py);
+  py += 2;
+  py = field('Principal dolor o reto actual', diagData.dolor, 16, py);
+  py += 4;
+
+  py = section('Recursos disponibles', py);
+  py = field('Disposición de inversión', diagData.inversion, 16, py);
+  py += 2;
+  py = field('Urgencia del proyecto', diagData.urgencia, 16, py);
+  py += 2;
+  py = field('¿Han tenido asesorías externas?', diagData.asesoria, 16, py);
+  if(diagData.asesoria_quien) {
+    py += 2;
+    py = field('¿Con quién?', diagData.asesoria_quien, 16, py);
   }
+  py += 4;
 
-  if(diagData.propuesta_valor && py<H-55) {
-    py+=4; line(py); py+=8;
-    sf('helvetica',8,'bold'); sc(C.rd); doc.text('PROPUESTA DE VALOR',16,py); py+=8;
-    sf('helvetica',9,'normal'); sc(C.gray); py=wrap(diagData.propuesta_valor,16,py,W-32,5.5);
-  }
+  sf('helvetica',7); sc(C.gl); doc.text('4', W-16, H-12, {align:'right'});
 
-  if(diagData.mercado_objetivo && py<H-40) {
-    py+=6; sf('helvetica',8,'bold'); sc(C.rd); doc.text('MERCADO OBJETIVO',16,py); py+=8;
-    sf('helvetica',9,'normal'); sc(C.gray); py=wrap(diagData.mercado_objetivo,16,py,W-32,5.5);
-  }
-
-  sf('helvetica',7); sc(C.gl); doc.text('2',W-16,H-12,{align:'right'});
-
-  // Agregar descripcion IA si existe
-  const iaDesc = document.getElementById('ia_descripcion')?.value?.trim();
-  const iaOpo  = document.getElementById('ia_oportunidad')?.value?.trim();
-  if(iaDesc || iaOpo) {
-    doc.addPage();
-    fill(C.white); doc.rect(0,0,W,H,'F');
-    sf('helvetica',7); sc(C.rd); doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(),16,18);
-    sf('helvetica',6); sc(C.gl); doc.text('Modelo de la Esmeralda - Aureum - Lina Bustillo',W-16,18,{align:'right'});
-    doc.setDrawColor(...C.border); doc.line(14,22,W-14,22);
-    let py3=34;
-    sf('helvetica',16); sc(C.gray); doc.text('Descripcion de la Marca',16,py3); py3+=14;
-    if(iaDesc) {
-      sf('helvetica',8,'bold'); sc(C.rd); doc.text('PERFIL',16,py3); py3+=7;
-      sf('helvetica',11,'normal'); sc(C.gray); py3=wrap(iaDesc,16,py3,W-32,6.5); py3+=10;
-    }
-    if(iaOpo) {
-      sf('helvetica',8,'bold'); sc(C.rd); doc.text('OPORTUNIDAD ESTRATEGICA',16,py3); py3+=7;
-      sf('helvetica',11,'normal'); sc(C.gray); py3=wrap(iaOpo,16,py3,W-32,6.5);
-    }
-    sf('helvetica',7); sc(C.gl); doc.text('3',W-16,H-12,{align:'right'});
-  }
-
-  const filename='Perfil-'+(diagData.marca||'marca').replace(/[\s\W]+/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.pdf';
+  const filename = 'Perfil-'+(diagData.marca||'marca').replace(/[\s\W]+/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.pdf';
   doc.save(filename);
   tst('PDF del Perfil descargado ✦');
 }
