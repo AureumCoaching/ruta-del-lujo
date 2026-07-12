@@ -2143,7 +2143,12 @@ async function generarDescripcionIA() {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': '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',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:500, messages:[{role:'user',content:prompt}] })
     });
     const data = await res.json();
