@@ -1776,6 +1776,31 @@ body { margin:0; background:var(--cream); font-family:'Montserrat',sans-serif; }
       
 
 
+
+    <!-- ── DESCRIPCIÓN IA ────────────────────────────────────────────── -->
+    <div style="margin-top:28px;padding-top:24px;border-top:2px solid var(--border);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gray);margin-bottom:4px;">Descripción de la Marca</div>
+      <div style="font-size:8px;letter-spacing:3px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:14px;">Generado con IA · Editable antes de descargar</div>
+      <div id="ia-error" style="display:none;padding:10px 12px;background:#fdecea;border-left:3px solid #c0392b;border-radius:2px;font-size:9px;color:#8a2a1f;margin-bottom:12px;"></div>
+      <div id="ia-loading" style="display:none;padding:16px 0;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose-dark);">Generando descripción…</div>
+        <div id="ia-dots" style="font-size:18px;color:var(--rose-mid);margin-top:8px;">· · ·</div>
+      </div>
+      <div id="ia-resultado" style="display:none;">
+        <div style="margin-bottom:14px;">
+          <label style="font-size:8px;letter-spacing:2px;color:var(--rose-dark);text-transform:uppercase;display:block;margin-bottom:6px;">Descripción de la marca</label>
+          <textarea id="ia_descripcion" style="width:100%;min-height:90px;font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.8;color:var(--gray);border:1px solid var(--border);border-radius:2px;padding:12px;background:var(--warm);resize:vertical;"></textarea>
+        </div>
+        <div>
+          <label style="font-size:8px;letter-spacing:2px;color:var(--rose-dark);text-transform:uppercase;display:block;margin-bottom:6px;">Oportunidad estratégica</label>
+          <textarea id="ia_oportunidad" style="width:100%;min-height:80px;font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.8;color:var(--gray);border:1px solid var(--border);border-radius:2px;padding:12px;background:var(--warm);resize:vertical;"></textarea>
+        </div>
+      </div>
+      <button class="btn-rose" onclick="generarDescripcionIA()" style="margin-top:14px;width:100%;">
+        ✦ Generar descripción con IA
+      </button>
+    </div>
+
     <!-- ACCIONES -->
     <div class="mod-actions">
       <button class="btn-rose" onclick="guardarPerfil()" style="flex:1;min-width:180px;">
@@ -1997,30 +2022,32 @@ async function exportarPDFPerfil() {
     return y;
   };
   const field = (label, value, x, y, w) => {
-    if(!value || value === '') return y;
+    if(!value || value.trim() === '') return y;
     sf('helvetica',7); sc(C.gl); doc.text(label.toUpperCase(), x, y); y+=5;
     sf('helvetica',9); sc(C.gray); y=wrap(value, x, y, w||W-32); y+=4;
     return y;
   };
-  const section = (titulo, y) => {
+  const sectionTitle = (titulo, y) => {
     fill(C.cream); doc.rect(14,y-4,W-28,7,'F');
     sf('helvetica',7,'bold'); sc(C.rd); doc.text(titulo.toUpperCase(), 16, y);
     ln(y+4); return y+10;
   };
-  const newPage = () => {
-    doc.addPage();
-    fill(C.white); doc.rect(0,0,W,H,'F');
-    sf('helvetica',7); sc(C.rd);
-    doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(), 16, 18);
-    sf('helvetica',6); sc(C.gl);
-    doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
-    ln(22);
-    return 34;
+  const checkPage = (py, needed) => {
+    if(py + needed > H-20) {
+      doc.addPage();
+      fill(C.white); doc.rect(0,0,W,H,'F');
+      sf('helvetica',7); sc(C.rd);
+      doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(), 16, 18);
+      sf('helvetica',6); sc(C.gl);
+      doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
+      ln(22);
+      return 34;
+    }
+    return py;
   };
 
   // ─ PORTADA ─────────────────────────────────────────────────────────────
   fill(C.cream); doc.rect(0,0,W,H,'F');
-  // Logo Aureum
   const logoEl = document.querySelector('.mod-logo');
   if(logoEl && logoEl.src && logoEl.src.startsWith('data:')) {
     try { doc.addImage(logoEl.src, 'PNG', W/2-20, 18, 40, 16, '', 'FAST'); } catch(e) {}
@@ -2037,6 +2064,7 @@ async function exportarPDFPerfil() {
   const meta=[
     ['AUDITADO POR', diagData.nombre||'—'],
     ['CARGO', diagData.cargo||'—'],
+    ['EMAIL', diagData.email||'—'],
     ['FECHA', new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'})],
     ['METODOLOGÍA', 'Modelo de la Esmeralda™ · Aureum'],
   ];
@@ -2051,85 +2079,123 @@ async function exportarPDFPerfil() {
   doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo · aureum.com.co', W/2,H-6,{align:'center'});
 
   // ─ PÁGINA 2: DATOS GENERALES ────────────────────────────────────────────
-  let py = newPage();
+  doc.addPage();
+  fill(C.white); doc.rect(0,0,W,H,'F');
+  sf('helvetica',7); sc(C.rd); doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(), 16, 18);
+  sf('helvetica',6); sc(C.gl); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
+  ln(22);
+  let py=34;
   sf('helvetica',16); sc(C.gray); doc.text('01 · Datos Generales', 16, py); py+=12;
 
-  py = section('Identificación', py);
-  py = field('Marca evaluada',  diagData.marca,       16, py); 
-  py = field('País de origen',  diagData.pais,        16, py);
-  py = field('Ciudad',          diagData.ciudad,      16, py);
-  py = field('Año de fundación',diagData.año,         16, py);
-  py = field('Naturaleza jurídica', diagData.juridica, 16, py);
-  py = field('N° de empleados', diagData.empleados,   16, py);
-  py = field('Ventas anuales',  diagData.ventas,      16, py);
+  py = sectionTitle('Identificación de la marca', py);
+  py = field('Marca evaluada',       diagData.marca,      16, py);
+  py = field('País de origen',       diagData.pais,       16, py);
+  py = field('Ciudad',               diagData.ciudad,     16, py);
+  py = field('Año de fundación',     diagData.año,        16, py);
+  py = field('Naturaleza jurídica',  diagData.juridica,   16, py);
+  py = field('Sector',               (diagData.sector||'')+(diagData.sector_otro?' · '+diagData.sector_otro:''), 16, py);
+  py = field('Etapa actual',         diagData.etapa,      16, py);
+  py = field('Estructura de negocio',diagData.estructura, 16, py);
+  py = field('¿Quién toma decisiones?', diagData.estructura_quien || document.getElementById('intro_estructura_quien')?.value || '', 16, py);
+  py = field('¿Marca artesanal?',    diagData.artesanal,  16, py);
   py += 4;
 
-  py = section('Responsable del diagnóstico', py);
+  py = checkPage(py, 40);
+  py = sectionTitle('Responsable del diagnóstico', py);
   py = field('Nombre',  diagData.nombre, 16, py);
   py = field('Cargo',   diagData.cargo,  16, py);
   py = field('Email',   diagData.email,  16, py);
   py += 4;
 
-  py = section('Clasificación', py);
-  py = field('Sector', (diagData.sector||'')+(diagData.sector_otro?' · '+diagData.sector_otro:''), 16, py);
-  py = field('Etapa actual', diagData.etapa, 16, py);
-  py = field('Estructura de negocio', diagData.estructura, 16, py);
-  py = field('¿Marca artesanal?', diagData.artesanal, 16, py);
+  py = checkPage(py, 40);
+  py = sectionTitle('Información comercial', py);
+  py = field('N° de empleados',  diagData.empleados, 16, py);
+  py = field('Ventas anuales',   diagData.ventas,    16, py);
   py += 4;
 
   sf('helvetica',7); sc(C.gl); doc.text('2', W-16, H-12, {align:'right'});
 
   // ─ PÁGINA 3: ESTRATEGIA ────────────────────────────────────────────────
-  py = newPage();
+  doc.addPage();
+  fill(C.white); doc.rect(0,0,W,H,'F');
+  sf('helvetica',7); sc(C.rd); doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(), 16, 18);
+  sf('helvetica',6); sc(C.gl); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
+  ln(22);
+  py=34;
   sf('helvetica',16); sc(C.gray); doc.text('02 · Estrategia y Posicionamiento', 16, py); py+=12;
 
-  py = section('Canales digitales', py);
-  py = field('Sitio web',   diagData.web,       16, py);
-  py = field('Instagram',   diagData.instagram, 16, py);
-  py = field('Facebook',    diagData.facebook,  16, py);
-  py = field('LinkedIn',    diagData.linkedin,  16, py);
-  py = field('Otra red',    diagData.otra_red,  16, py);
+  py = sectionTitle('Canales digitales', py);
+  py = field('Sitio web',    diagData.web,       16, py);
+  py = field('Instagram',    diagData.instagram, 16, py);
+  py = field('Facebook',     diagData.facebook,  16, py);
+  py = field('LinkedIn',     diagData.linkedin,  16, py);
+  py = field('Otra red',     diagData.otra_red,  16, py);
   py += 4;
 
-  py = section('Propuesta de valor y mercado', py);
-  py = field('Propuesta de valor', diagData.propuesta_valor, 16, py);
+  py = checkPage(py, 50);
+  py = sectionTitle('Identidad de marca', py);
+  py = field('Propuesta de valor',   diagData.propuesta_valor,  16, py);
   py += 2;
-  py = field('Mercado objetivo', diagData.mercado_objetivo, 16, py);
+  py = field('Propósito de marca',   (diagData.proposito||'')+(diagData.proposito_otro?' · '+diagData.proposito_otro:''), 16, py);
   py += 2;
-  py = field('Propósito de marca', diagData.proposito||(diagData.proposito_otro||''), 16, py);
+  py = field('Mercado objetivo',     diagData.mercado_objetivo, 16, py);
+  py += 2;
+  py = field('Reconocimientos y certificaciones', diagData.reconocimientos, 16, py);
   py += 4;
 
-  py = section('Metas y objetivos', py);
-  py = field('Objetivo del diagnóstico', diagData.objetivo, 16, py);
+  py = checkPage(py, 50);
+  py = sectionTitle('Metas y objetivos', py);
+  py = field('Objetivo del diagnóstico', diagData.objetivo,    16, py);
   py += 2;
-  py = field('Meta a corto plazo', diagData.meta_corto, 16, py);
+  py = field('Meta a corto plazo',       diagData.meta_corto,  16, py);
   py += 2;
-  py = field('Meta a largo plazo', diagData.meta_largo, 16, py);
+  py = field('Meta a largo plazo',       diagData.meta_largo,  16, py);
   py += 4;
 
   sf('helvetica',7); sc(C.gl); doc.text('3', W-16, H-12, {align:'right'});
 
   // ─ PÁGINA 4: CONTEXTO Y RECURSOS ───────────────────────────────────────
-  py = newPage();
+  doc.addPage();
+  fill(C.white); doc.rect(0,0,W,H,'F');
+  sf('helvetica',7); sc(C.rd); doc.text('PERFIL DE MARCA · '+(diagData.marca||'').toUpperCase(), 16, 18);
+  sf('helvetica',6); sc(C.gl); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
+  ln(22);
+  py=34;
   sf('helvetica',16); sc(C.gray); doc.text('03 · Contexto y Recursos', 16, py); py+=12;
 
-  py = section('Contexto de la marca', py);
-  py = field('Reconocimientos y certificaciones', diagData.reconocimientos, 16, py);
-  py += 2;
+  py = sectionTitle('Contexto de la marca', py);
   py = field('Principal dolor o reto actual', diagData.dolor, 16, py);
   py += 4;
 
-  py = section('Recursos disponibles', py);
-  py = field('Disposición de inversión', diagData.inversion, 16, py);
+  py = checkPage(py, 60);
+  py = sectionTitle('Recursos y disponibilidad', py);
+  py = field('Disposición de inversión',      diagData.inversion,       16, py);
   py += 2;
-  py = field('Urgencia del proyecto', diagData.urgencia, 16, py);
+  py = field('Nivel de urgencia',             diagData.urgencia,        16, py);
   py += 2;
-  py = field('¿Han tenido asesorías externas?', diagData.asesoria, 16, py);
+  py = field('¿Han tenido asesorías externas?', diagData.asesoria,      16, py);
   if(diagData.asesoria_quien) {
     py += 2;
     py = field('¿Con quién?', diagData.asesoria_quien, 16, py);
   }
   py += 4;
+
+  // Descripción IA si existe
+  const iaDesc = document.getElementById('ia_descripcion')?.value?.trim();
+  const iaOpo  = document.getElementById('ia_oportunidad')?.value?.trim();
+  if(iaDesc || iaOpo) {
+    py = checkPage(py, 60);
+    py = sectionTitle('Análisis de la marca · Generado con IA', py);
+    if(iaDesc) {
+      sf('helvetica',8,'bold'); sc(C.rd); doc.text('DESCRIPCIÓN', 16, py); py+=7;
+      sf('helvetica',11,'normal'); sc(C.gray); py=wrap(iaDesc, 16, py, W-32, 6.5); py+=6;
+    }
+    if(iaOpo) {
+      py = checkPage(py, 40);
+      sf('helvetica',8,'bold'); sc(C.rd); doc.text('OPORTUNIDAD ESTRATÉGICA', 16, py); py+=7;
+      sf('helvetica',11,'normal'); sc(C.gray); py=wrap(iaOpo, 16, py, W-32, 6.5);
+    }
+  }
 
   sf('helvetica',7); sc(C.gl); doc.text('4', W-16, H-12, {align:'right'});
 
