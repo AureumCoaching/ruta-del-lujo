@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Módulo 02 · Contexto de Mercado · Ruta del Lujo · Aureum</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -1200,7 +1199,7 @@ body{margin:0;background:var(--cream);font-family:'Montserrat',sans-serif;}
 .mod-tab.active{color:var(--rose-dark);border-bottom-color:var(--rose-dark);font-weight:600;}
 .mod-tab-content{display:none;}
 .mod-tab-content.active{display:block;}
-.mod-export-bar{padding:16px 40px;background:var(--warm);border-top:2px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.mod-export-bar{padding:16px 40px;background:var(--warm);border-top:2px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;}
 .mod-footer{padding:14px 40px;border-top:1px solid var(--border);background:var(--warm);font-size:7px;color:var(--gray-lt);letter-spacing:1px;text-align:center;}
 .section{display:block!important;}
 </style>
@@ -1219,18 +1218,31 @@ body{margin:0;background:var(--cream);font-family:'Montserrat',sans-serif;}
     <div class="mod-desc">Sitúa la marca frente a su entorno competitivo real: la competencia, las fuerzas del sector y el perfil del consumidor de lujo.</div>
   </div>
 
+  <!-- Cargar perfil JSON -->
+  <div style="padding:12px 40px;background:var(--warm);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div>
+      <div style="font-size:7px;letter-spacing:2px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:4px;">¿Ya completaste el Módulo 01?</div>
+      <label style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:9px;color:var(--rose-dark);border:1px solid var(--rose-mid);padding:6px 14px;border-radius:2px;">
+        ↑ Cargar perfil desde JSON
+        <input type="file" accept=".json" onchange="cargarPerfilJSON(this)" style="display:none;">
+      </label>
+    </div>
+    <div id="perfil-loaded-badge" style="display:none;align-items:center;gap:8px;padding:6px 14px;background:rgba(196,137,122,0.1);border-radius:2px;">
+      <span style="font-size:10px;color:var(--rose-dark);">✓ Perfil cargado:</span>
+      <span id="perfil-marca-display" style="font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--gray);"></span>
+    </div>
+  </div>
+
   <div class="mod-tabs">
     <div class="mod-tab active" onclick="switchTab(0)">① Análisis de Competencia</div>
     <div class="mod-tab" onclick="switchTab(1)">② Porter · 5 Fuerzas</div>
     <div class="mod-tab" onclick="switchTab(2)">③ Perfil del Consumidor</div>
   </div>
 
+  <!-- TAB 1: Competencia -->
   <div class="mod-tab-content active" id="tab-0">
-    <!-- ══ FORMULARIO COMPETENCIA MÓDULO 02 ══════════════════════════════════ -->
     <div id="comp-mod-wrapper" style="padding:28px 40px 32px;">
-
-      <!-- Indicador de pasos -->
-      <div style="display:flex;gap:0;margin-bottom:28px;border:1px solid var(--border);border-radius:3px;overflow:hidden;">
+      <div style="display:flex;border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-bottom:28px;">
         <div id="comp-step-ind-0" onclick="compModStep(0)" style="flex:1;padding:10px;text-align:center;cursor:pointer;background:var(--rose-dark);color:#fff;">
           <div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;">Paso 1</div>
           <div style="font-size:9px;margin-top:2px;">Competidores</div>
@@ -1245,129 +1257,219 @@ body{margin:0;background:var(--cream);font-family:'Montserrat',sans-serif;}
         </div>
       </div>
 
-      <!-- PASO 1: Competidores -->
       <div id="comp-mod-step-0">
         <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gray);margin-bottom:4px;">Competidores</div>
         <div style="font-size:8px;letter-spacing:3px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:16px;">Ingresa hasta 5 marcas competidoras directas</div>
         
-      <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 01</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Nombre de la marca</label><input class="bp-inp" id="c17_nombre_0" placeholder="Ej. Casa Viva..." oninput="onComp17Change(0)"></div>
-          <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_0" placeholder="Colombia..." oninput="onComp17Change(0)"></div>
+        <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
+          <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 01</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Nombre</label><input class="bp-inp" id="c17_nombre_0" placeholder="Ej. Casa Viva..." oninput="onComp17Change(0)"></div>
+            <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_0" oninput="onComp17Change(0)"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Web</label><input class="bp-inp" id="c17_web_0" placeholder="https://..."></div>
+            <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_0" placeholder="@..."></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_0" placeholder="¿Qué hace bien?"></div>
+            <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_0" placeholder="¿Qué le falta?"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <div>
+              <label class="bp-lbl">Calidad percibida · <span id="c17_calidad_0_val">5</span>/10</label>
+              <input type="range" min="1" max="10" value="5" id="c17_calidad_0"
+                oninput="document.getElementById('c17_calidad_0_val').textContent=this.value;actualizarMapa()"
+                style="width:100%;accent-color:var(--rose-dark);margin-top:4px;">
+            </div>
+            <div>
+              <label class="bp-lbl">Precio de entrada (USD)</label>
+              <input class="bp-inp" type="number" id="c17_precio_0" placeholder="Ej. 150"
+                oninput="actualizarMapa()" style="margin-top:0;">
+            </div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Sitio web</label><input class="bp-inp" id="c17_web_0" placeholder="https://..." oninput="onComp17Change(0)"></div>
-          <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_0" placeholder="@..." oninput="onComp17Change(0)"></div>
+        <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
+          <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 02</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Nombre</label><input class="bp-inp" id="c17_nombre_1" placeholder="Ej. Casa Viva..." oninput="onComp17Change(1)"></div>
+            <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_1" oninput="onComp17Change(1)"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Web</label><input class="bp-inp" id="c17_web_1" placeholder="https://..."></div>
+            <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_1" placeholder="@..."></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_1" placeholder="¿Qué hace bien?"></div>
+            <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_1" placeholder="¿Qué le falta?"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <div>
+              <label class="bp-lbl">Calidad percibida · <span id="c17_calidad_1_val">5</span>/10</label>
+              <input type="range" min="1" max="10" value="5" id="c17_calidad_1"
+                oninput="document.getElementById('c17_calidad_1_val').textContent=this.value;actualizarMapa()"
+                style="width:100%;accent-color:var(--rose-dark);margin-top:4px;">
+            </div>
+            <div>
+              <label class="bp-lbl">Precio de entrada (USD)</label>
+              <input class="bp-inp" type="number" id="c17_precio_1" placeholder="Ej. 150"
+                oninput="actualizarMapa()" style="margin-top:0;">
+            </div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_0" placeholder="¿Qué hace bien?" oninput="onComp17Change(0)"></div>
-          <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_0" placeholder="¿Qué le falta?" oninput="onComp17Change(0)"></div>
+        <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
+          <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 03</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Nombre</label><input class="bp-inp" id="c17_nombre_2" placeholder="Ej. Casa Viva..." oninput="onComp17Change(2)"></div>
+            <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_2" oninput="onComp17Change(2)"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Web</label><input class="bp-inp" id="c17_web_2" placeholder="https://..."></div>
+            <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_2" placeholder="@..."></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_2" placeholder="¿Qué hace bien?"></div>
+            <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_2" placeholder="¿Qué le falta?"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <div>
+              <label class="bp-lbl">Calidad percibida · <span id="c17_calidad_2_val">5</span>/10</label>
+              <input type="range" min="1" max="10" value="5" id="c17_calidad_2"
+                oninput="document.getElementById('c17_calidad_2_val').textContent=this.value;actualizarMapa()"
+                style="width:100%;accent-color:var(--rose-dark);margin-top:4px;">
+            </div>
+            <div>
+              <label class="bp-lbl">Precio de entrada (USD)</label>
+              <input class="bp-inp" type="number" id="c17_precio_2" placeholder="Ej. 150"
+                oninput="actualizarMapa()" style="margin-top:0;">
+            </div>
+          </div>
         </div>
-      </div>
-      <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 02</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Nombre de la marca</label><input class="bp-inp" id="c17_nombre_1" placeholder="Ej. Casa Viva..." oninput="onComp17Change(1)"></div>
-          <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_1" placeholder="Colombia..." oninput="onComp17Change(1)"></div>
+        <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
+          <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 04</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Nombre</label><input class="bp-inp" id="c17_nombre_3" placeholder="Ej. Casa Viva..." oninput="onComp17Change(3)"></div>
+            <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_3" oninput="onComp17Change(3)"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Web</label><input class="bp-inp" id="c17_web_3" placeholder="https://..."></div>
+            <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_3" placeholder="@..."></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_3" placeholder="¿Qué hace bien?"></div>
+            <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_3" placeholder="¿Qué le falta?"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <div>
+              <label class="bp-lbl">Calidad percibida · <span id="c17_calidad_3_val">5</span>/10</label>
+              <input type="range" min="1" max="10" value="5" id="c17_calidad_3"
+                oninput="document.getElementById('c17_calidad_3_val').textContent=this.value;actualizarMapa()"
+                style="width:100%;accent-color:var(--rose-dark);margin-top:4px;">
+            </div>
+            <div>
+              <label class="bp-lbl">Precio de entrada (USD)</label>
+              <input class="bp-inp" type="number" id="c17_precio_3" placeholder="Ej. 150"
+                oninput="actualizarMapa()" style="margin-top:0;">
+            </div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Sitio web</label><input class="bp-inp" id="c17_web_1" placeholder="https://..." oninput="onComp17Change(1)"></div>
-          <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_1" placeholder="@..." oninput="onComp17Change(1)"></div>
+        <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
+          <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 05</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Nombre</label><input class="bp-inp" id="c17_nombre_4" placeholder="Ej. Casa Viva..." oninput="onComp17Change(4)"></div>
+            <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_4" oninput="onComp17Change(4)"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Web</label><input class="bp-inp" id="c17_web_4" placeholder="https://..."></div>
+            <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_4" placeholder="@..."></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_4" placeholder="¿Qué hace bien?"></div>
+            <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_4" placeholder="¿Qué le falta?"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <div>
+              <label class="bp-lbl">Calidad percibida · <span id="c17_calidad_4_val">5</span>/10</label>
+              <input type="range" min="1" max="10" value="5" id="c17_calidad_4"
+                oninput="document.getElementById('c17_calidad_4_val').textContent=this.value;actualizarMapa()"
+                style="width:100%;accent-color:var(--rose-dark);margin-top:4px;">
+            </div>
+            <div>
+              <label class="bp-lbl">Precio de entrada (USD)</label>
+              <input class="bp-inp" type="number" id="c17_precio_4" placeholder="Ej. 150"
+                oninput="actualizarMapa()" style="margin-top:0;">
+            </div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_1" placeholder="¿Qué hace bien?" oninput="onComp17Change(1)"></div>
-          <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_1" placeholder="¿Qué le falta?" oninput="onComp17Change(1)"></div>
+
+        <!-- Marca evaluada para el mapa -->
+        <div style="border:2px solid var(--rose-dark);border-radius:3px;padding:14px;margin-top:16px;margin-bottom:16px;background:rgba(196,137,122,0.05);">
+          <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">✦ Marca evaluada</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <label class="bp-lbl">Calidad percibida · <span id="marca_calidad_val">7</span>/10</label>
+              <input type="range" min="1" max="10" value="7" id="marca_calidad"
+                oninput="document.getElementById('marca_calidad_val').textContent=this.value;actualizarMapa()"
+                style="width:100%;accent-color:var(--rose-dark);margin-top:4px;">
+            </div>
+            <div>
+              <label class="bp-lbl">Precio de entrada (USD)</label>
+              <input class="bp-inp" type="number" id="marca_precio" placeholder="Ej. 200"
+                oninput="actualizarMapa()">
+            </div>
+          </div>
         </div>
-      </div>
-      <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 03</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Nombre de la marca</label><input class="bp-inp" id="c17_nombre_2" placeholder="Ej. Casa Viva..." oninput="onComp17Change(2)"></div>
-          <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_2" placeholder="Colombia..." oninput="onComp17Change(2)"></div>
+
+        <!-- Mapa de posicionamiento -->
+        <div style="margin-top:16px;">
+          <div style="font-size:8px;letter-spacing:3px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:12px;">Mapa de Posicionamiento · Precio vs Calidad</div>
+          <div style="position:relative;background:var(--warm);border:1px solid var(--border);border-radius:3px;padding:8px;">
+            <canvas id="mapa-posicionamiento" width="580" height="360" style="width:100%;display:block;"></canvas>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;" id="mapa-leyenda"></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Sitio web</label><input class="bp-inp" id="c17_web_2" placeholder="https://..." oninput="onComp17Change(2)"></div>
-          <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_2" placeholder="@..." oninput="onComp17Change(2)"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_2" placeholder="¿Qué hace bien?" oninput="onComp17Change(2)"></div>
-          <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_2" placeholder="¿Qué le falta?" oninput="onComp17Change(2)"></div>
-        </div>
-      </div>
-      <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 04</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Nombre de la marca</label><input class="bp-inp" id="c17_nombre_3" placeholder="Ej. Casa Viva..." oninput="onComp17Change(3)"></div>
-          <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_3" placeholder="Colombia..." oninput="onComp17Change(3)"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Sitio web</label><input class="bp-inp" id="c17_web_3" placeholder="https://..." oninput="onComp17Change(3)"></div>
-          <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_3" placeholder="@..." oninput="onComp17Change(3)"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_3" placeholder="¿Qué hace bien?" oninput="onComp17Change(3)"></div>
-          <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_3" placeholder="¿Qué le falta?" oninput="onComp17Change(3)"></div>
-        </div>
-      </div>
-      <div style="border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:10px;background:var(--warm);">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Competidor 05</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Nombre de la marca</label><input class="bp-inp" id="c17_nombre_4" placeholder="Ej. Casa Viva..." oninput="onComp17Change(4)"></div>
-          <div><label class="bp-lbl">País</label><input class="bp-inp" id="c17_pais_4" placeholder="Colombia..." oninput="onComp17Change(4)"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-          <div><label class="bp-lbl">Sitio web</label><input class="bp-inp" id="c17_web_4" placeholder="https://..." oninput="onComp17Change(4)"></div>
-          <div><label class="bp-lbl">Instagram</label><input class="bp-inp" id="c17_ig_4" placeholder="@..." oninput="onComp17Change(4)"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="bp-lbl">Fortaleza principal</label><input class="bp-inp" id="c17_fortaleza_4" placeholder="¿Qué hace bien?" oninput="onComp17Change(4)"></div>
-          <div><label class="bp-lbl">Debilidad principal</label><input class="bp-inp" id="c17_debilidad_4" placeholder="¿Qué le falta?" oninput="onComp17Change(4)"></div>
-        </div>
-      </div>
+
         <div style="margin-top:20px;display:flex;gap:10px;">
           <button class="btn-next-sec" onclick="compModStep(1)" style="flex:1;">Siguiente · Referentes →</button>
         </div>
         <div id="comp-mod-error" style="display:none;margin-top:10px;padding:10px 12px;background:#fdecea;border-left:3px solid #c0392b;border-radius:2px;font-size:9px;color:#8a2a1f;"></div>
       </div>
 
-      <!-- PASO 2: Referentes -->
       <div id="comp-mod-step-1" style="display:none;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gray);margin-bottom:4px;">Referentes Internacionales</div>
         <div style="font-size:8px;letter-spacing:3px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:16px;">Marcas que admiras por su posicionamiento o narrativa</div>
-        <div class="bp-guide" style="margin-bottom:20px;">No son competidoras — son marcas que admiras por su estética, narrativa o posicionamiento. Pueden ser de cualquier país o categoría.</div>
-
-        <div class="ref-grid" style="grid-template-columns:1fr 1fr;gap:16px;display:grid;">
-          <div class="ref-card" style="padding:16px;border:1px solid var(--border);border-radius:3px;background:var(--warm);">
+        <div class="bp-guide" style="margin-bottom:20px;">No son competidoras directas. Pueden ser de cualquier categoría o país.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="padding:16px;border:1px solid var(--border);border-radius:3px;background:var(--warm);">
             <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Referente 01</div>
             <label class="bp-lbl">Marca</label>
             <input class="bp-inp" id="ref_nombre_0" placeholder="Ej. Loewe, The Row…" style="margin-bottom:10px;">
-            <label class="bp-lbl">¿Qué admiras de esta marca?</label>
-            <input class="bp-inp" id="ref_admiras_0" placeholder="Ej. Narrativa artesanal, identidad visual…">
+            <label class="bp-lbl">¿Qué admiras?</label>
+            <input class="bp-inp" id="ref_admiras_0" placeholder="Ej. Narrativa artesanal...">
           </div>
-          <div class="ref-card" style="padding:16px;border:1px solid var(--border);border-radius:3px;background:var(--warm);">
+          <div style="padding:16px;border:1px solid var(--border);border-radius:3px;background:var(--warm);">
             <div style="font-size:7px;letter-spacing:3px;color:var(--rose-dark);text-transform:uppercase;margin-bottom:10px;">Referente 02</div>
             <label class="bp-lbl">Marca</label>
             <input class="bp-inp" id="ref_nombre_1" placeholder="Ej. Loro Piana, Valentino…" style="margin-bottom:10px;">
-            <label class="bp-lbl">¿Qué admiras de esta marca?</label>
-            <input class="bp-inp" id="ref_admiras_1" placeholder="Ej. Precio aspiracional, minimalismo…">
+            <label class="bp-lbl">¿Qué admiras?</label>
+            <input class="bp-inp" id="ref_admiras_1" placeholder="Ej. Precio aspiracional...">
           </div>
         </div>
-
         <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn-next-sec" onclick="compModStep(0)" style="flex:1;min-width:120px;">← Competidores</button>
+          <button class="btn-next-sec" onclick="compModStep(0)" style="flex:1;min-width:120px;">← Volver</button>
           <button class="btn-rose" onclick="confirmarCompetidoresMod02()" style="flex:2;min-width:200px;">✦ Analizar Competencia con IA →</button>
         </div>
       </div>
 
       <div id="comp-mod-step-2" style="display:none;">
-        <div style="font-size:8px;letter-spacing:3px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:16px;">Análisis Competitivo · Generado por IA</div>
+        <div id="comp-ia-loading" style="padding:20px 0;text-align:center;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose-dark);">Analizando competencia…</div>
+          <div style="font-size:20px;color:var(--rose-mid);margin-top:12px;">· · ·</div>
+        </div>
       </div>
-
     </div>
-    <!-- ══ SEC9 resultado (se muestra después del análisis) ═══════════════ -->
     <div id="sec9-result" style="display:none;">
-<div id="sec9-result" style="display:none;"><div class="section" id="sec9">
+      <div class="section" id="sec9">
   <div class="wiz-shell solo">
     <div class="wiz-left">
       <div class="wiz-progress">
@@ -1542,8 +1644,13 @@ body{margin:0;background:var(--cream);font-family:'Montserrat',sans-serif;}
 
 <!-- ══ SEC13: AUDITORÍA COMERCIAL ══════════════════════════════════════════ -->
 
-</div></div>
-  <div class="mod-tab-content" id="tab-1"><div class="section" id="sec4"><div class="wiz-shell solo"><div class="wiz-left"><div class="wiz-progress"><div class="prog-steps"><div class="prog-step"><div class="prog-dot active" id="ppd0">1</div><div class="prog-label active" id="ppl0">La marca</div></div><div class="prog-line" id="ppline0"></div><div class="prog-step"><div class="prog-dot" id="ppd1">2</div><div class="prog-label" id="ppl1">5 Fuerzas</div></div><div class="prog-line" id="ppline1"></div><div class="prog-step"><div class="prog-dot" id="ppd2">3</div><div class="prog-label" id="ppl2">Análisis</div></div></div></div>
+
+    </div>
+  </div>
+
+  <!-- TAB 2: Porter -->
+  <div class="mod-tab-content" id="tab-1">
+    <div class="section" id="sec4"><div class="wiz-shell solo"><div class="wiz-left"><div class="wiz-progress"><div class="prog-steps"><div class="prog-step"><div class="prog-dot active" id="ppd0">1</div><div class="prog-label active" id="ppl0">La marca</div></div><div class="prog-line" id="ppline0"></div><div class="prog-step"><div class="prog-dot" id="ppd1">2</div><div class="prog-label" id="ppl1">5 Fuerzas</div></div><div class="prog-line" id="ppline1"></div><div class="prog-step"><div class="prog-dot" id="ppd2">3</div><div class="prog-label" id="ppl2">Análisis</div></div></div></div>
 <div class="wiz-panel active" id="pppanel0">
   <div class="step1-heading">5 Fuerzas<br>de Porter</div>
   <div class="step1-sub">Análisis competitivo del entorno de tu marca</div>
@@ -1593,8 +1700,13 @@ body{margin:0;background:var(--cream);font-family:'Montserrat',sans-serif;}
 </button>
       </div>
     </div><div class="wiz-right" style="justify-content:flex-start;padding-top:32px;overflow-y:auto;"><div style="width:100%;max-width:420px;"><div class="map-title-txt">Porter · Diagrama de Fuerzas</div><div class="radar-wrap"><canvas id="radarCanvas" width="380" height="340"></canvas></div><div class="ai-loading" id="porterLoading" style="padding:20px 0;display:none;"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--rose-dark);">Analizando fuerzas…</div><div class="ai-msg">Generando implicaciones estratégicas</div><div id="porterDots" style="margin-top:14px;font-size:22px;color:var(--rose-mid);">· · ·</div></div></div></div></div></div>
-</div>
-  <div class="mod-tab-content" id="tab-2"><div class="section" id="sec11">
+
+    <div id="porter_sugerencias" style="display:none;margin:0 40px 20px;padding:16px;background:var(--warm);border-radius:3px;border-left:3px solid var(--rose-dark);"></div>
+  </div>
+
+  <!-- TAB 3: Consumidor -->
+  <div class="mod-tab-content" id="tab-2">
+    <div class="section" id="sec11">
   <div class="wiz-shell solo">
     <div class="wiz-left">
       <div class="wiz-progress">
@@ -1801,31 +1913,19 @@ body{margin:0;background:var(--cream);font-family:'Montserrat',sans-serif;}
 
         <div style="margin-top:16px;padding:12px;background:var(--warm);border:1px solid var(--border);border-radius:2px;">
           <div style="font-size:8px;letter-spacing:2px;color:var(--gray-lt);text-transform:uppercase;margin-bottom:6px;">Fuentes académicas</div>
-          <div style="font-size:9px;color:var(--gray-mid);line-height:1.7;">
-            · Bustillo, L.M. (2024). The SAGE Handbook of Luxury Brand Management and Marketing<br>
-            · Truong, Y., McColl, R. & Kitchen, P. (2009). Journal of Marketing Management
-          </div>
-        </div>
-      </div>
-    </div>
+          
   </div>
-</div>
-
-</div>
 
   <div class="mod-export-bar">
     <button class="btn-rose" onclick="exportarJSONMod02()" style="flex:1;min-width:200px;">↓ Exportar JSON · Brand Audit</button>
     <button class="btn-next-sec" onclick="exportarPDFMod02()" style="flex:1;min-width:200px;">↓ Descargar PDF · Contexto de Mercado</button>
-    <span style="font-size:8px;color:var(--gray-lt);">Exporta los resultados para usar en el Módulo 05 Brand Audit</span>
   </div>
 
   <div class="mod-footer">Modelo de la Esmeralda™ · Aureum · © Lina Bustillo · aureum.com.co</div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Datos de tipologías del consumidor ──────────────────────────────────────
 const BUSTILLO_DATA = {
   vacilo: {
     nombre: 'El Vacilón',
@@ -1872,40 +1972,24 @@ const TRUONG_DATA = {
   }
 };
 
-
-
-function stripCiteTags(s) {
-  if(!s) return s;
-  // Elimina tags <cite index="...">texto</cite> dejando solo el texto interno,
-  // y también tags huérfanos/auto-cerrados que el modelo pueda devolver.
-  return s
-    .replace(/<cite[^>]*>([\s\S]*?)<\/cite>/gi, '$1')
-    .replace(/<\/?cite[^>]*>/gi, '')
-    .replace(/]*>([\s\S]*?)<\/antml:cite>/gi, '$1')
-    .replace(/<\/?antml:cite[^>]*>/gi, '');
-}
-
-</script>
-
-<script>
 let diagData = {};
 let cp = 0;
 let toastTimer;
 let personas = [];
-let prismaFiles = [null, null];
-
 let cpBustillo = null, cpTruong = null, cpStep = 0;
 
-let competidores17 = Array.from({length:5}, ()=>({nombre:'',web:'',ig:'',pais:'',trayectoria:'',precio:''}));
 
-
-
-
-function cargarPerfilBase() {
-  try {
-    const saved = localStorage.getItem('aureum_perfil');
-    if(saved) diagData = Object.assign(diagData, JSON.parse(saved));
-  } catch(e) {}
+// ── Funciones de navegación (al inicio para disponibilidad inmediata) ──
+function compModStep(step) {
+  [0,1,2].forEach(i => {
+    const panel = document.getElementById('comp-mod-step-'+i);
+    const ind   = document.getElementById('comp-step-ind-'+i);
+    if(panel) panel.style.display = i===step ? 'block' : 'none';
+    if(ind) {
+      ind.style.background = i===step ? 'var(--rose-dark)' : 'var(--warm)';
+      ind.style.color      = i===step ? '#fff' : 'var(--gray-lt)';
+    }
+  });
 }
 
 function switchTab(idx) {
@@ -1915,6 +1999,7 @@ function switchTab(idx) {
 }
 
 function goSection(g, idx) {}
+function irAlPorter() { switchTab(1); }
 
 function selP(i) {
   cp = i;
@@ -1922,36 +2007,214 @@ function selP(i) {
   document.querySelectorAll('.cp-panel').forEach((p,j) => p.classList.toggle('active', j===i));
 }
 
-function irAlPorter() { switchTab(1); }
+function cargarPerfilJSON(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const payload = JSON.parse(e.target.result);
+      const datos = payload.datos || payload;
+      diagData = Object.assign(diagData, datos);
+      localStorage.setItem('aureum_perfil', JSON.stringify(diagData));
+      const badge = document.getElementById('perfil-loaded-badge');
+      const marcaEl = document.getElementById('perfil-marca-display');
+      if(badge) badge.style.display = 'flex';
+      if(marcaEl) marcaEl.textContent = diagData.marca || '';
+      tst('Perfil cargado: ' + (diagData.marca || 'marca') + ' ✦');
+    } catch(err) { tst('Error al leer JSON: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+function cargarPerfilBase() {
+  try {
+    const saved = localStorage.getItem('aureum_perfil');
+    if(saved) diagData = Object.assign(diagData, JSON.parse(saved));
+  } catch(e) {}
+}
+
+async function confirmarCompetidoresMod02() {
+  competidores17 = [];
+  for(let i=0; i<5; i++) {
+    const nombre = document.getElementById('c17_nombre_'+i)?.value?.trim() || '';
+    if(!nombre) continue;
+    competidores17.push({
+      nombre,
+      pais:      document.getElementById('c17_pais_'+i)?.value?.trim()      || '',
+      web:       document.getElementById('c17_web_'+i)?.value?.trim()       || '',
+      ig:        document.getElementById('c17_ig_'+i)?.value?.trim()        || '',
+      fortaleza: document.getElementById('c17_fortaleza_'+i)?.value?.trim() || '',
+      debilidad: document.getElementById('c17_debilidad_'+i)?.value?.trim() || '',
+    });
+  }
+  window.competidores17 = competidores17;
+
+  if(competidores17.length === 0) {
+    const errEl = document.getElementById('comp-mod-error');
+    if(errEl) { errEl.style.display='block'; errEl.textContent='Ingresa al menos un competidor para continuar.'; }
+    compModStep(0); return;
+  }
+
+  compModStep(2);
+  try { updateCompSummary(); } catch(e) {}
+
+  try {
+    await analyzeComp();
+    const sec9Result = document.getElementById('sec9-result');
+    const wrapper    = document.getElementById('comp-mod-wrapper');
+    if(sec9Result) sec9Result.style.display = 'block';
+    if(wrapper)    wrapper.style.display    = 'none';
+    try { goCompStep(2); } catch(e) {}
+    if(!document.getElementById('btn-ir-porter')) {
+      const btn = document.createElement('div');
+      btn.id = 'btn-ir-porter';
+      btn.style.cssText = 'padding:16px 40px;border-top:1px solid var(--border);background:var(--warm);margin-top:16px;';
+      btn.innerHTML = '<button class="btn-next-sec" onclick="switchTab(1)" style="width:100%;">→ Continuar con Porter · 5 Fuerzas</button>';
+      if(sec9Result) sec9Result.appendChild(btn);
+    }
+  } catch(e) {
+    const loading = document.getElementById('comp-ia-loading');
+    if(loading) loading.innerHTML = '<div style="color:#c0392b;font-size:9px;padding:12px;">Error: '+e.message+' <button onclick="confirmarCompetidoresMod02()" style="margin-left:8px;">Reintentar</button></div>';
+    tst('Error: ' + e.message);
+  }
+}
+
+function volverFormComp() {
+  const sec9Result = document.getElementById('sec9-result');
+  const wrapper    = document.getElementById('comp-mod-wrapper');
+  if(sec9Result) sec9Result.style.display = 'none';
+  if(wrapper)    wrapper.style.display    = 'block';
+  compModStep(0);
+}
 
 function exportarJSONMod02() {
   const marca = diagData.marca || 'marca';
   const payload = {
-    modulo: '02-contexto-mercado',
-    version: '1.0',
+    modulo: '02-contexto-mercado', version: '1.0',
     fecha: new Date().toISOString().slice(0,10),
     datos: {
-      competidores: window.competidores17 || [],
-      comp_posicion:    document.getElementById('comp_posicion')?.textContent    || '',
-      comp_ventaja:     document.getElementById('comp_ventaja')?.textContent     || '',
-      comp_amenazas:    document.getElementById('comp_amenazas')?.textContent    || '',
+      competidores:       window.competidores17 || [],
+      comp_posicion:      document.getElementById('comp_posicion')?.textContent      || '',
+      comp_ventaja:       document.getElementById('comp_ventaja')?.textContent       || '',
+      comp_amenazas:      document.getElementById('comp_amenazas')?.textContent      || '',
       comp_recomendacion: document.getElementById('comp_recomendacion')?.textContent || '',
       porter_diagnostico: document.getElementById('porter_diagnostico')?.textContent || '',
+      porter_critica:     document.getElementById('porter_critica')?.textContent     || '',
       porter_oportunidad: document.getElementById('porter_oportunidad')?.textContent || '',
-      porter_scores:    window.porterData || {},
-      consumidor:       document.getElementById('cp_cruce_texto')?.textContent   || '',
+      consumidor:         document.getElementById('cp_cruce_texto')?.textContent     || '',
     }
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = '02-mercado-' + marca.toLowerCase().replace(/[\s\W]+/g,'-') + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = '02-mercado-'+marca.toLowerCase().replace(/[\s\W]+/g,'-')+'.json';
+  a.click(); URL.revokeObjectURL(url);
   tst('JSON Módulo 02 exportado ✦');
 }
 
+async function exportarPDFMod02() {
+  if(!window.jspdf?.jsPDF) { alert('Necesitas internet para generar el PDF.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const W=210, H=297;
+  const C = { rose:[196,137,122], rd:[158,97,82], cream:[250,246,240], gray:[92,84,80], gl:[162,152,146], border:[222,212,206], white:[255,255,255] };
+  const sf = (n,s,st='normal') => { doc.setFont(n,st); doc.setFontSize(s); };
+  const sc = ([r,g,b]) => doc.setTextColor(r,g,b);
+  const fill = ([r,g,b]) => doc.setFillColor(r,g,b);
+  const ln = (y) => { doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(14,y,W-14,y); };
+  const wrap = (txt,x,y,mw,lh=5.5) => { if(!txt) return y; doc.splitTextToSize(String(txt),mw).forEach(l => { doc.text(l,x,y); y+=lh; }); return y; };
+  const pgHdr = (m) => {
+    fill(C.white); doc.rect(0,0,W,H,'F');
+    sf('helvetica',7); sc(C.rd); doc.text('CONTEXTO DE MERCADO · '+(m||'').toUpperCase(),16,18);
+    sf('helvetica',6); sc(C.gl); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo',W-16,18,{align:'right'});
+    ln(22); return 34;
+  };
+  const secT = (t,y) => { fill(C.cream); doc.rect(14,y-4,W-28,7,'F'); sf('helvetica',7,'bold'); sc(C.rd); doc.text(t.toUpperCase(),16,y); ln(y+4); return y+10; };
+  const fld = (l,v,x,y) => {
+    if(!v||!String(v).trim()||String(v).trim()==='—') return y;
+    sf('helvetica',7); sc(C.gl); doc.text(l.toUpperCase(),x,y); y+=5;
+    sf('helvetica',9); sc(C.gray); y=wrap(String(v),x,y,W-32); y+=4; return y;
+  };
+  const marca = diagData.marca || '—';
+
+  // Portada
+  fill(C.cream); doc.rect(0,0,W,H,'F');
+  const logoEl = document.querySelector('.mod-logo');
+  if(logoEl?.src?.startsWith('data:')) { try { doc.addImage(logoEl.src,'PNG',W/2-20,18,40,16,'','FAST'); } catch(e){} }
+  sf('helvetica',7); sc(C.gl); doc.text('MÓDULO 02 · CONTEXTO DE MERCADO · RUTA DEL LUJO',W/2,42,{align:'center'});
+  doc.setDrawColor(...C.rose); doc.setLineWidth(0.4); doc.line(40,48,W-40,48);
+  sf('helvetica',26); sc(C.gray); doc.text(marca,W/2,66,{align:'center'});
+  sf('helvetica',9); sc(C.gl); doc.text('Contexto de Mercado · Diagnóstico Estratégico · Ruta del Lujo',W/2,76,{align:'center'});
+  doc.setLineWidth(0.2); doc.line(60,84,W-60,84);
+  sf('helvetica',7); sc(C.rd); doc.text('FECHA',W/2,96,{align:'center'});
+  sf('helvetica',10); sc(C.gray); doc.text(new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}),W/2,103,{align:'center'});
+  fill(C.rose); doc.rect(0,H-15,W,15,'F');
+  sf('helvetica',7); sc(C.white); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo · aureum.com.co',W/2,H-6,{align:'center'});
+
+  // Pág 2: Competidores
+  let py = pgHdr(marca);
+  sf('helvetica',16); sc(C.gray); doc.text('01 · Análisis de Competencia',16,py); py+=12;
+  py = secT('Competidores identificados', py);
+  const comps = window.competidores17 || [];
+  if(comps.length) {
+    comps.forEach((comp,i) => {
+      if(py>H-50) { doc.addPage(); py=pgHdr(marca); }
+      sf('helvetica',8,'bold'); sc(C.rd); doc.text('Competidor 0'+(i+1)+' · '+comp.nombre,16,py); py+=6;
+      if(comp.pais) { sf('helvetica',7); sc(C.gl); doc.text('País: '+comp.pais,20,py); py+=5; }
+      if(comp.fortaleza) { sf('helvetica',9); sc(C.gray); py=wrap('Fortaleza: '+comp.fortaleza,20,py,W-36); }
+      if(comp.debilidad) { py=wrap('Debilidad: '+comp.debilidad,20,py,W-36); }
+      py+=4;
+    });
+  } else { sf('helvetica',9); sc(C.gl); doc.text('No se registraron competidores.',16,py); py+=8; }
+  py = secT('Análisis competitivo · IA', py);
+  py = fld('Posición actual',     document.getElementById('comp_posicion')?.textContent,      16, py);
+  py = fld('Ventaja diferencial', document.getElementById('comp_ventaja')?.textContent,       16, py);
+  py = fld('Amenazas',            document.getElementById('comp_amenazas')?.textContent,      16, py);
+  py = fld('Recomendación',       document.getElementById('comp_recomendacion')?.textContent, 16, py);
+  py = secT('Referentes internacionales', py);
+  ['0','1'].forEach(i => {
+    const n = document.getElementById('ref_nombre_'+i)?.value?.trim();
+    const a = document.getElementById('ref_admiras_'+i)?.value?.trim();
+    if(n) { sf('helvetica',8,'bold'); sc(C.rd); doc.text('Referente 0'+(+i+1)+' · '+n,16,py); py+=6; if(a){ sf('helvetica',9); sc(C.gray); py=wrap(a,20,py,W-36); } py+=4; }
+  });
+  sf('helvetica',7); sc(C.gl); doc.text('2',W-16,H-12,{align:'right'});
+
+  // Pág 3: Porter
+  doc.addPage(); py = pgHdr(marca);
+  sf('helvetica',16); sc(C.gray); doc.text('02 · Porter · 5 Fuerzas',16,py); py+=12;
+  py = secT('Scores de las 5 fuerzas', py);
+  [['rival','Rivalidad competitiva'],['compradores','Poder de compradores'],['proveedores','Poder de proveedores'],['entrantes','Nuevos entrantes'],['sustitutos','Productos sustitutos']].forEach(([f,nombre]) => {
+    const sl = document.getElementById('porter_'+f+'_slider');
+    if(sl) { py = fld(nombre, sl.value+' / 5', 16, py); }
+  });
+  py = secT('Diagnóstico Porter · IA', py);
+  py = fld('Diagnóstico',      document.getElementById('porter_diagnostico')?.textContent,    16, py);
+  py = fld('Fuerza crítica',   document.getElementById('porter_critica')?.textContent,        16, py);
+  py = fld('Oportunidad',      document.getElementById('porter_oportunidad')?.textContent,    16, py);
+  py = fld('Recomendaciones',  document.getElementById('porter_recomendaciones')?.textContent,16, py);
+  const sugBox = document.getElementById('porter_sugerencias');
+  if(sugBox && sugBox.textContent.trim()) {
+    py = secT('5 Sugerencias estratégicas', py);
+    sf('helvetica',9); sc(C.gray); py=wrap(sugBox.textContent,16,py,W-32);
+  }
+  sf('helvetica',7); sc(C.gl); doc.text('3',W-16,H-12,{align:'right'});
+
+  // Pág 4: Consumidor
+  doc.addPage(); py = pgHdr(marca);
+  sf('helvetica',16); sc(C.gray); doc.text('03 · Perfil del Consumidor',16,py); py+=12;
+  py = secT('Análisis del consumidor · IA', py);
+  py = fld('Diagnóstico',   document.getElementById('cp_diagnostico')?.textContent || document.getElementById('cp_cruce_texto')?.textContent, 16, py);
+  py = fld('Aspiraciones',  document.getElementById('cp_aspiraciones')?.textContent,  16, py);
+  py = fld('Comportamiento',document.getElementById('cp_comportamiento')?.textContent,16, py);
+  py = fld('Recomendación', document.getElementById('cp_recomendacion')?.textContent, 16, py);
+  sf('helvetica',7); sc(C.gl); doc.text('4',W-16,H-12,{align:'right'});
+
+  doc.save('Contexto-Mercado-'+(marca||'marca').replace(/[\s\W]+/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+  tst('PDF Contexto de Mercado descargado ✦');
+}
+
+// ── Funciones base del módulo 02 ──────────────────────────────────
 function tst(m){
   const t=document.getElementById('toast');
   if(!t) return;
@@ -2425,10 +2688,11 @@ async function analyzePorter() {
     + '\nMARCA: '+marca+'\nSECTOR: '+ind
     + '\n'+sliders.map(s=>s.nombre.toUpperCase()+': '+s.val+'/5'+(s.txt?' ('+s.txt+')':'')).join('\n')
     + '\nResponde SOLO este JSON sin backticks ni texto adicional:'
-    + '\n{"diagnostico":"Diagnóstico estratégico general. 2-3 frases.",'
-    + '"critica":"Fuerza más crítica y por qué. 2 frases.",'
-    + '"recomendaciones":"3 recomendaciones estratégicas concretas.",'
-    + '"oportunidad":"Oportunidad estratégica clave para esta marca. 2 frases."}';
+    + '\n{"diagnostico":"Diagnostico estrategico general. 2-3 frases.",'
+    + '"critica":"Fuerza mas critica y por que. 2 frases.",'
+    + '"recomendaciones":"2 recomendaciones estrategicas concretas.",'
+    + '"oportunidad":"Oportunidad clave. 2 frases.",'
+    + '"sugerencias":["sugerencia accionable 1","sugerencia 2","sugerencia 3","sugerencia 4","sugerencia 5"]}';
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages',{
@@ -2461,6 +2725,16 @@ async function analyzePorter() {
     const md=document.getElementById('porter-marca-display2');
     if(md) md.textContent=marca;
 
+    const sugBox=document.getElementById('porter_sugerencias');
+    if(sugBox&&p.sugerencias&&Array.isArray(p.sugerencias)){
+      sugBox.innerHTML=p.sugerencias.map(function(s,i){
+        var st1='display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;';
+        var st2='min-width:20px;font-weight:bold;color:var(--rose-dark);font-size:10px;';
+        var st3='font-size:10px;color:var(--gray);line-height:1.6;';
+        return '<div style="'+st1+'"><span style="'+st2+'">'+(i+1)+'.</span><span style="'+st3+'">'+s+'</span></div>';
+      }).join('');
+      sugBox.style.display='block';
+    }
     goPorterStep(2);
     tst('Porter analizado ✦');
 
@@ -2546,95 +2820,6 @@ function goNextSection(currentSecIdx) {
   const wiz = document.querySelector('#sec'+currentSecIdx+' .wiz-left');
   if(wiz) wiz.scrollTop = 0;
   tst('→ ' + next.name);
-}
-
-async function analizarPerfilConsumidor() {
-  if(!cpTruong) { tst('Selecciona primero un perfil de Truong'); return; }
-
-  const bData = cpBustillo ? BUSTILLO_DATA[cpBustillo] : null;
-  const tData = TRUONG_DATA[cpTruong];
-  const sector = diagData.sector || '';
-  const marca  = diagData.marca  || '';
-
-  const displayName = (bData ? bData.nombre + ' × ' : '') + tData.nombre;
-  const display = document.getElementById('cp-perfil-display');
-  if(display) display.textContent = displayName;
-
-  const loading = document.getElementById('cpLoading');
-  const result  = document.getElementById('cp_result');
-  const errorBox = document.getElementById('cpErrorBox');
-  if(errorBox){ errorBox.style.display='none'; errorBox.textContent=''; }
-  if(loading) loading.style.display = 'block';
-  if(result)  result.style.display  = 'none';
-
-  let dots=0;
-  const anim=setInterval(()=>{
-    dots=(dots+1)%4;
-    const d=document.getElementById('cpDots');
-    if(d) d.textContent=['·','· ·','· · ·','· · · ·'][dots];
-  },500);
-
-  const pr = 'La marca de lujo "' + marca + '" (sector: ' + sector + ') describió a su consumidor actual.'
-    + (bData
-        ? '\n\nÁNGULO 1 — Identidad cultural del consumidor (marco propio de Aureum/Bustillo):'
-          + '\nPerfil elegido: ' + bData.nombre
-          + '\nMotivación: ' + bData.motivacion
-          + '\nAspiración: ' + bData.aspiracion
-          + '\nComportamiento: ' + bData.comportamiento
-        : '')
-    + '\n\n' + (bData ? 'ÁNGULO 2' : 'Ángulo único') + ' — Motor de decisión de compra (marco académico Truong, McColl & Kitchen 2009):'
-    + '\nDriver elegido: ' + tData.nombre
-    + '\n' + tData.driver
-    + (bData
-        ? '\n\nEstas son DOS RESPUESTAS DADAS POR LA MISMA MARCA sobre el mismo consumidor — no son hallazgos de investigación de mercado, son la percepción de quien lidera la marca. Tu tarea es ayudarles a reflexionar: ¿las dos respuestas cuentan una historia coherente sobre su consumidor, o hay una tensión entre cómo describen su identidad y qué los mueve a comprar? Sé honesta y específica, sin inventar validación externa que no existe.'
-        : '\n\nEsta es la respuesta dada por la marca sobre qué motiva a su consumidor — su propia percepción, no un hallazgo de investigación de mercado. Ayúdales a reflexionar sobre las implicaciones de esto para su comunicación y estrategia.'
-      )
-    + '\n\nResponde SOLO este JSON sin backticks ni texto adicional:\n'
-    + '{"lectura_titulo":"Frase breve (máx 8 palabras) que resuma esta descripción del consumidor, sin pretender ser un \"tipo\" oficial",'
-    + '"lectura_desc":"2-3 frases describiendo qué cuenta esta descripción sobre el consumidor de esta marca.",'
-    + '"coherencia":' + (bData
-        ? '"¿Las dos respuestas se sienten coherentes entre sí o hay una tensión/contraste interesante? Explica en 2-3 frases, con honestidad — si hay tensión, dila como una pregunta útil para la marca, no como un error."'
-        : '"Como solo se respondió un ángulo, en lugar de buscar coherencia entre dos respuestas, reflexiona en 2-3 frases sobre qué tan claro tiene la marca a su consumidor a partir de esta única respuesta."'
-      ) + ','
-    + '"comunicar":"Dado lo que la marca describió, ¿cómo podría hablarle a este consumidor? Tono, tipo de contenido, qué evitar. 3-4 frases.",'
-    + '"canales":"¿Dónde y en qué momentos este tipo de consumidor suele encontrarse con marcas de lujo? 2-3 frases.",'
-    + '"oportunidad":"Una oportunidad concreta para esta marca de lujo latinoamericano, basada en esta descripción de su consumidor. 2-3 frases."}';
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:pr}]})
-    });
-    const data = await res.json();
-    clearInterval(anim);
-    if(loading) loading.style.display = 'none';
-
-    if(data.error) throw new Error((data.error.type?'['+data.error.type+'] ':'')+(data.error.message||'API error'));
-
-    const rawText = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text||'').join('');
-    if(!rawText) throw new Error('Respuesta vacía de la API');
-    const text = rawText.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
-    const p = safeParseAIJson(text);
-
-    const setTxt = (id,val) => { const el=document.getElementById(id); if(el) el.textContent = val||'—'; };
-    setTxt('cp_cruce_titulo',  p.lectura_titulo);
-    setTxt('cp_cruce_desc',    p.lectura_desc);
-    setTxt('cp_coherencia',    p.coherencia);
-    setTxt('cp_comunicar',     p.comunicar);
-    setTxt('cp_canales',       p.canales);
-    setTxt('cp_oportunidad',   p.oportunidad);
-
-    if(result) result.style.display = 'block';
-    goConsPerfilStep(2);
-    tst('✦ Perfil del consumidor analizado');
-
-  } catch(err) {
-    clearInterval(anim);
-    if(loading) loading.style.display = 'none';
-    console.error('analizarPerfilConsumidor error:', err);
-    if(errorBox){ errorBox.style.display='block'; errorBox.textContent='Error: '+(err.message||'desconocido'); }
-    tst('Error al analizar perfil del consumidor');
-  }
 }
 
 function goConsPerfilStep(step) {
@@ -2741,11 +2926,54 @@ function onComp17Change(i) {
   }
 }
 
-// API Key — reemplaza TU_API_KEY_AQUI con tu key de Anthropic
+// ── analizarPerfilConsumidor compacta ─────────────────────────────
+async function analizarPerfilConsumidor() {
+  const marca  = diagData.marca  || '';
+  const sector = diagData.sector || '';
+  const bSel = document.querySelector('.bustillo-btn.active')?.dataset?.val || '';
+  const tSel = document.querySelector('.truong-btn.active')?.dataset?.val   || '';
+  const bData = bSel && window.BUSTILLO_DATA ? window.BUSTILLO_DATA[bSel] : null;
+  const tData = tSel && window.TRUONG_DATA   ? window.TRUONG_DATA[tSel]   : null;
+  const loading = document.getElementById('cp_loading') || document.getElementById('cpLoading');
+  const errEl   = document.getElementById('cp_error')   || document.getElementById('cpError');
+  const result  = document.getElementById('cp_result')  || document.getElementById('cpResult');
+  if(loading) loading.style.display='block';
+  if(result)  result.style.display='none';
+  if(errEl)   { errEl.style.display='none'; errEl.textContent=''; }
+  let dots=0;
+  const dotsEl = document.getElementById('cp_dots') || document.getElementById('cpDots');
+  const anim = setInterval(() => { dots=(dots+1)%4; if(dotsEl) dotsEl.textContent=['·','· ·','· · ·','· · · ·'][dots]; }, 500);
+  const pr = 'Analiza el consumidor de lujo para la marca "'+marca+'" (sector: '+sector+').'
+    + (bData ? ' Perfil cultural: '+bData.nombre+'. Motivacion: '+bData.motivacion+'.' : '')
+    + (tData ? ' Driver de compra: '+tData.nombre+'.' : '')
+    + ' Responde SOLO este JSON sin backticks: {"diagnostico":"2 frases.","aspiraciones":"Aspiraciones principales.","comportamiento":"Comportamiento de compra.","recomendacion":"Accion prioritaria."}';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:pr}]}) });
+    const data = await res.json();
+    clearInterval(anim); if(loading) loading.style.display='none';
+    if(data.error) throw new Error(JSON.stringify(data.error));
+    const raw = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text||'').join('');
+    const p = safeParseAIJson(raw);
+    ['diagnostico','aspiraciones','comportamiento','recomendacion'].forEach(k => { const el=document.getElementById('cp_'+k); if(el&&p[k]) el.textContent=p[k]; });
+    const cruce = document.getElementById('cp_cruce_texto');
+    if(cruce) cruce.textContent=[p.diagnostico,p.aspiraciones,p.comportamiento,p.recomendacion].filter(Boolean).join(' | ');
+    if(result) result.style.display='block';
+    try { goConsPerfilStep(3); } catch(e) {}
+    tst('Perfil del consumidor analizado ✦');
+  } catch(err) {
+    clearInterval(anim); if(loading) loading.style.display='none';
+    if(errEl) { errEl.style.display='block'; const isRL=/rate_limit|exceeded_limit/i.test(err.message); errEl.innerHTML=(isRL?'Limite alcanzado.':'Error: '+err.message)+' <button onclick="analizarPerfilConsumidor()" style="margin-left:8px;font-size:8px;">Reintentar</button>'; }
+    tst('Error al analizar perfil del consumidor');
+  }
+}
+
+// (sugerencias de Porter se agregan via el prompt en analyzePorter)
+
+// ── API Key ───────────────────────────────────────────────────────
 const ANTHROPIC_API_KEY = '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';
 const _origFetch = window.fetch;
 window.fetch = function(url, opts) {
-  if(typeof url === 'string' && url.includes('api.anthropic.com') && ANTHROPIC_API_KEY !== 'TU_API_KEY_AQUI') {
+  if(typeof url==='string' && url.includes('api.anthropic.com') && ANTHROPIC_API_KEY !== 'TU_API_KEY_AQUI') {
     opts = opts || {};
     opts.headers = Object.assign({}, opts.headers, {
       'x-api-key': ANTHROPIC_API_KEY,
@@ -2756,202 +2984,126 @@ window.fetch = function(url, opts) {
   return _origFetch(url, opts);
 };
 
+// ── Init ──────────────────────────────────────────────────────────
 
+// ── Mapa de posicionamiento ────────────────────────────────────────
+const MAPA_COLORES = ['#C4897A','#5C5450','#9A6F2E','#7A9E6F','#8a6abf','#3a9a7a'];
 
+function actualizarMapa() {
+  const canvas = document.getElementById('mapa-posicionamiento');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = 70;
+  ctx.clearRect(0,0,W,H);
 
-// ── Navegación por pasos en Competencia ──────────────────────────
-function compModStep(step) {
-  [0,1,2].forEach(i => {
-    const panel = document.getElementById('comp-mod-step-'+i);
-    const ind   = document.getElementById('comp-step-ind-'+i);
-    if(panel) panel.style.display = i===step ? 'block' : 'none';
-    if(ind) {
-      ind.style.background = i===step ? 'var(--rose-dark)' : 'var(--warm)';
-      ind.style.color      = i===step ? '#fff' : 'var(--gray-lt)';
-    }
-  });
-}
+  // Fondo
+  ctx.fillStyle = '#FAF6F0';
+  ctx.fillRect(0,0,W,H);
 
-async function confirmarCompetidoresMod02() {
-  // Leer competidores del formulario
-  competidores17 = [];
-  for(let i=0; i<5; i++) {
-    const nombre = document.getElementById('c17_nombre_'+i)?.value?.trim() || '';
+  // Cuadrantes
+  const midX = (W-pad)/2 + pad, midY = H/2;
+  ctx.strokeStyle = '#E8E0D8'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(midX,pad/2); ctx.lineTo(midX,H-pad/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad,midY); ctx.lineTo(W-pad/2,midY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Etiquetas de ejes
+  ctx.fillStyle = '#A29892'; ctx.font = '9px Montserrat,sans-serif';
+  // Eje Y: PRECIO - etiquetas a la derecha del eje, separadas
+  ctx.textAlign = 'left';
+  ctx.fillText('▲ PRECIO ALTO', pad+6, pad);
+  ctx.fillText('▼ PRECIO BAJO', pad+6, H-pad+14);
+  // Eje X: CALIDAD - etiquetas debajo del eje
+  ctx.textAlign = 'left';
+  ctx.fillText('CALIDAD ←', pad+4, H-12);
+  ctx.textAlign = 'right';
+  ctx.fillText('→ MAYOR', W-pad/2, H-12);
+  // Título eje Y rotado - fuera del área de datos
+  ctx.save(); ctx.translate(10, H/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.font='8px Montserrat,sans-serif';
+  ctx.fillText('PRECIO', 0, 0); ctx.restore();
+
+  // Ejes principales
+  ctx.strokeStyle = '#C4C0BC'; ctx.lineWidth = 1.5; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(pad,H-pad); ctx.lineTo(W-pad/2,H-pad); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad,pad/2); ctx.lineTo(pad,H-pad); ctx.stroke();
+
+  // Recopilar marcas
+  const marcas = [];
+  const marcaNombre = diagData.marca || 'Marca evaluada';
+  const marcaCal = parseInt(document.getElementById('marca_calidad')?.value||7);
+  const marcaPrecio = parseFloat(document.getElementById('marca_precio')?.value||0);
+  if(marcaNombre) marcas.push({ nombre:marcaNombre, cal:marcaCal, precio:marcaPrecio, color:'#C4897A', principal:true });
+
+  for(let i=0;i<5;i++){
+    const nombre = document.getElementById('c17_nombre_'+i)?.value?.trim();
     if(!nombre) continue;
-    competidores17.push({
-      nombre,
-      pais:      document.getElementById('c17_pais_'+i)?.value?.trim()      || '',
-      web:       document.getElementById('c17_web_'+i)?.value?.trim()       || '',
-      ig:        document.getElementById('c17_ig_'+i)?.value?.trim()        || '',
-      fortaleza: document.getElementById('c17_fortaleza_'+i)?.value?.trim() || '',
-      debilidad: document.getElementById('c17_debilidad_'+i)?.value?.trim() || '',
-    });
+    const cal    = parseInt(document.getElementById('c17_calidad_'+i)?.value||5);
+    const precio = parseFloat(document.getElementById('c17_precio_'+i)?.value||0);
+    marcas.push({ nombre, cal, precio, color:MAPA_COLORES[i+1]||'#888', principal:false });
   }
 
-  if(competidores17.length === 0) {
-    const errEl = document.getElementById('comp-mod-error');
-    if(errEl) { errEl.style.display='block'; errEl.textContent='Ingresa al menos un competidor para continuar.'; }
-    compModStep(0);
-    return;
-  }
+  if(marcas.length === 0) return;
 
-  // Ir al paso 3 y mostrar loading
-  compModStep(2);
-  const step2 = document.getElementById('comp-mod-step-2');
-  if(step2) step2.innerHTML = '<div style="padding:20px 0;text-align:center;"><div style=\'font-family:\'Cormorant Garamond\',serif;font-size:16px;color:var(--rose-dark);\'>Analizando competencia…</div><div style=\'font-size:20px;color:var(--rose-mid);margin-top:12px;\'>· · ·</div></div>';
+  // Calcular rango de precios para normalizar
+  const precios = marcas.map(m=>m.precio).filter(p=>p>0);
+  const minP = precios.length ? Math.min(...precios)*0.8 : 0;
+  const maxP = precios.length ? Math.max(...precios)*1.2 : 1000;
 
-  // Actualizar resumen de competidores en sec9
-  try { updateCompSummary(); } catch(e) {}
+  // Área de dibujo
+  const areaX = W - pad - pad/2;
+  const areaY = H - pad - pad/2;
 
-  // Lanzar análisis con IA
-  try {
-    await analyzeComp();
-    // Mostrar sec9 con resultados
-    const sec9Result = document.getElementById('sec9-result');
-    const wrapper = document.getElementById('comp-mod-wrapper');
-    if(sec9Result) sec9Result.style.display = 'block';
-    if(wrapper) wrapper.style.display = 'none';
-    // Ir al panel de análisis
-    try { goCompStep(2); } catch(e) {}
-    // Botón volver al formulario
-    if(step2) step2.innerHTML += '<button class="btn-next-sec" onclick="volverFormComp()" style="margin-top:12px;">← Editar competidores</button>';
-  } catch(e) {
-    if(step2) step2.innerHTML = '<div style=\'color:#c0392b;font-size:9px;padding:12px;\'>Error: '+e.message+' <button onclick=\'confirmarCompetidoresMod02()\' style=\'margin-left:8px;\'>↻ Reintentar</button></div>';
-    tst('Error en análisis: ' + e.message);
-  }
-}
+  marcas.forEach(m => {
+    // x = calidad (1-10) → de izquierda a derecha
+    const x = pad + (m.cal-1)/9 * areaX;
+    // y = precio → arriba=caro, abajo=barato
+    const normP = maxP>minP ? (m.precio-minP)/(maxP-minP) : 0.5;
+    const y = H-pad - normP * areaY;
 
-function volverFormComp() {
-  const sec9Result = document.getElementById('sec9-result');
-  const wrapper = document.getElementById('comp-mod-wrapper');
-  if(sec9Result) sec9Result.style.display = 'none';
-  if(wrapper) wrapper.style.display = 'block';
-  compModStep(0);
-}
+    // Sombra
+    ctx.shadowColor='rgba(0,0,0,0.15)'; ctx.shadowBlur=6; ctx.shadowOffsetY=2;
 
+    // Punto
+    ctx.beginPath();
+    ctx.arc(x, y, m.principal?10:8, 0, Math.PI*2);
+    ctx.fillStyle = m.color;
+    ctx.fill();
+    ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 
-async function exportarPDFMod02() {
-  if(!window.jspdf?.jsPDF) {
-    alert('Necesitas conexion a internet para generar el PDF.');
-    return;
-  }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'mm', format:'a4' });
-  const W=210, H=297;
-  const C = {
-    rose:[196,137,122], rd:[158,97,82], cream:[250,246,240],
-    gray:[92,84,80], gl:[162,152,146], border:[222,212,206], white:[255,255,255]
-  };
-  const sf = (n,s,st='normal') => { doc.setFont(n,st); doc.setFontSize(s); };
-  const sc = ([r,g,b]) => doc.setTextColor(r,g,b);
-  const fill = ([r,g,b]) => doc.setFillColor(r,g,b);
-  const ln = (y) => { doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(14,y,W-14,y); };
-  const wrap = (txt,x,y,mw,lh=5.5) => {
-    if(!txt) return y;
-    doc.splitTextToSize(String(txt),mw).forEach(l => { doc.text(l,x,y); y+=lh; });
-    return y;
-  };
-  const header = (marca) => {
-    fill(C.white); doc.rect(0,0,W,H,'F');
-    sf('helvetica',7); sc(C.rd);
-    doc.text('CONTEXTO DE MERCADO · '+(marca||'').toUpperCase(), 16, 18);
-    sf('helvetica',6); sc(C.gl);
-    doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo', W-16, 18, {align:'right'});
-    ln(22); return 34;
-  };
-  const sectionT = (t,y) => {
-    fill(C.cream); doc.rect(14,y-4,W-28,7,'F');
-    sf('helvetica',7,'bold'); sc(C.rd); doc.text(t.toUpperCase(),16,y);
-    ln(y+4); return y+10;
-  };
-  const field = (l,v,x,y) => {
-    if(!v||!v.trim()) return y;
-    sf('helvetica',7); sc(C.gl); doc.text(l.toUpperCase(),x,y); y+=5;
-    sf('helvetica',9); sc(C.gray); y=wrap(v,x,y,W-32); y+=4;
-    return y;
-  };
-  const marca = diagData.marca || '—';
+    if(m.principal){
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2;
+      ctx.stroke();
+    }
 
-  // PORTADA
-  fill(C.cream); doc.rect(0,0,W,H,'F');
-  const logoEl = document.querySelector('.mod-logo');
-  if(logoEl?.src?.startsWith('data:')) { try { doc.addImage(logoEl.src,'PNG',W/2-20,18,40,16,'','FAST'); } catch(e){} }
-  sf('helvetica',7); sc(C.gl); doc.text('MÓDULO 02 · CONTEXTO DE MERCADO · RUTA DEL LUJO',W/2,42,{align:'center'});
-  doc.setDrawColor(...C.rose); doc.setLineWidth(0.4); doc.line(40,48,W-40,48);
-  sf('helvetica',26); sc(C.gray); doc.text(marca,W/2,66,{align:'center'});
-  sf('helvetica',9); sc(C.gl); doc.text('Contexto de Mercado · Diagnóstico Estratégico',W/2,76,{align:'center'});
-  doc.setLineWidth(0.2); doc.line(60,84,W-60,84);
-  const fecha = new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
-  sf('helvetica',7); sc(C.rd); doc.text('FECHA',W/2,96,{align:'center'});
-  sf('helvetica',10); sc(C.gray); doc.text(fecha,W/2,103,{align:'center'});
-  sf('helvetica',7); sc(C.rd); doc.text('METODOLOGÍA',W/2,116,{align:'center'});
-  sf('helvetica',10); sc(C.gray); doc.text('Modelo de la Esmeralda™ · Aureum',W/2,123,{align:'center'});
-  fill(C.rose); doc.rect(0,H-15,W,15,'F');
-  sf('helvetica',7); sc(C.white); doc.text('Modelo de la Esmeralda™ · Aureum · © Lina Bustillo · aureum.com.co',W/2,H-6,{align:'center'});
-
-  // PÁG 2: COMPETIDORES
-  let py = header(marca);
-  sf('helvetica',16); sc(C.gray); doc.text('01 · Análisis de Competencia',16,py); py+=12;
-  py = sectionT('Competidores identificados', py);
-  const comps = window.competidores17 || [];
-  if(comps.length) {
-    comps.forEach((comp,i) => {
-      if(py>H-50) { doc.addPage(); py=header(marca); }
-      sf('helvetica',8,'bold'); sc(C.rd); doc.text('Competidor 0'+(i+1)+' · '+(comp.nombre||''), 16, py); py+=6;
-      sf('helvetica',7,'normal'); sc(C.gl);
-      if(comp.pais) { doc.text('País: '+comp.pais, 20, py); py+=5; }
-      if(comp.fortaleza) { py=wrap('Fortaleza: '+comp.fortaleza, 20, py, W-36); }
-      if(comp.debilidad) { py=wrap('Debilidad: '+comp.debilidad, 20, py, W-36); }
-      py+=4;
-    });
-  } else { sf('helvetica',9); sc(C.gl); doc.text('No se registraron competidores.',16,py); py+=8; }
-
-  py = sectionT('Posición competitiva · IA', py);
-  py = field('Posición actual', document.getElementById('comp_posicion')?.textContent, 16, py);
-  py = field('Ventaja diferencial', document.getElementById('comp_ventaja')?.textContent, 16, py);
-  py = field('Amenazas', document.getElementById('comp_amenazas')?.textContent, 16, py);
-  py = field('Recomendación', document.getElementById('comp_recomendacion')?.textContent, 16, py);
-  sf('helvetica',7); sc(C.gl); doc.text('2',W-16,H-12,{align:'right'});
-
-  // PÁG 3: REFERENTES Y PORTER
-  doc.addPage(); py = header(marca);
-  sf('helvetica',16); sc(C.gray); doc.text('02 · Referentes y Porter',16,py); py+=12;
-
-  py = sectionT('Referentes internacionales', py);
-  ['0','1'].forEach(i => {
-    const n = document.getElementById('ref_nombre_'+i)?.value;
-    const a = document.getElementById('ref_admiras_'+i)?.value;
-    if(n) {
-      sf('helvetica',8,'bold'); sc(C.rd); doc.text('Referente 0'+(parseInt(i)+1)+' · '+n,16,py); py+=6;
-      if(a) { sf('helvetica',9,'normal'); sc(C.gray); py=wrap(a,20,py,W-36); }
-      py+=4;
+    // Etiqueta
+    ctx.fillStyle = '#5C5450';
+    ctx.font = m.principal ? 'bold 10px Montserrat,sans-serif' : '9px Montserrat,sans-serif';
+    ctx.textAlign = x > W*0.7 ? 'right' : 'left';
+    const lx = x > W*0.7 ? x-14 : x+14;
+    ctx.fillText(m.nombre.length>18?m.nombre.substring(0,16)+'…':m.nombre, lx, y+4);
+    if(m.precio>0){
+      ctx.fillStyle='#A29892'; ctx.font='8px Montserrat,sans-serif';
+      ctx.fillText('$'+m.precio, lx, y+14);
     }
   });
 
-  py = sectionT('Porter · 5 Fuerzas', py);
-  ['rival','compradores','proveedores','entrantes','sustitutos'].forEach(f => {
-    const sl = document.getElementById('porter_'+f+'_slider');
-    const lbl = {rival:'Rivalidad',compradores:'Poder compradores',proveedores:'Poder proveedores',entrantes:'Nuevos entrantes',sustitutos:'Sustitutos'}[f];
-    if(sl) { field(lbl, sl.value+' / 5', 16, py); py+=9; }
-  });
-  py = field('Diagnóstico Porter · IA', document.getElementById('porter_diagnostico')?.textContent, 16, py);
-  sf('helvetica',7); sc(C.gl); doc.text('3',W-16,H-12,{align:'right'});
-
-  // PÁG 4: CONSUMIDOR
-  doc.addPage(); py = header(marca);
-  sf('helvetica',16); sc(C.gray); doc.text('03 · Perfil del Consumidor',16,py); py+=12;
-  py = sectionT('Análisis del consumidor · IA', py);
-  py = field('Perfil', document.getElementById('cp_cruce_texto')?.textContent, 16, py);
-  sf('helvetica',7); sc(C.gl); doc.text('4',W-16,H-12,{align:'right'});
-
-  const filename = 'Contexto-Mercado-'+(marca||'marca').replace(/[\s\W]+/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.pdf';
-  doc.save(filename);
-  tst('PDF Contexto de Mercado descargado ✦');
+  // Leyenda
+  const leyenda = document.getElementById('mapa-leyenda');
+  if(leyenda) {
+    leyenda.innerHTML = marcas.map(m =>
+      '<div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--gray);">'
+      +'<span style="width:10px;height:10px;border-radius:50%;background:'+m.color+';display:inline-block;flex-shrink:0;"></span>'
+      +m.nombre+'</div>'
+    ).join('');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   cargarPerfilBase();
   try { initPorterData(); } catch(e) {}
+  setTimeout(actualizarMapa, 300);
 });
 </script>
 </body>
