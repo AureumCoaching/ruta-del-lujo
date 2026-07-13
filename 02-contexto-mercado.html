@@ -2326,45 +2326,35 @@ function tst(m){
 }
 
 function safeParseAIJson(raw) {
-  if(!raw) throw new Error('Respuesta vacia de la API');
-  // Limpiar backticks y prefijos comunes
-  var text = raw
-    .replace(/```json\s*/gi, '')
-    .replace(/```\s*/g, '')
-    .replace(/^[^{[]*/, '')  // eliminar texto antes del primer { o [
-    .trim();
-  // Encontrar el JSON principal
+  if(!raw) throw new Error('Respuesta vacia');
+  // Paso 1: limpiar backticks y prefijos
+  var text = raw.replace(/```json/gi,'').replace(/```/g,'').trim();
+  // Paso 2: encontrar el objeto JSON
   var s = text.indexOf('{');
   var e = text.lastIndexOf('}');
   if(s === -1 || e <= s) throw new Error('Respuesta inesperada de IA - no contiene JSON');
   text = text.substring(s, e+1);
-  // Intento 1: parse directo
+  // Paso 3: parse directo
   try { return JSON.parse(text); } catch(e1) {}
-  // Intento 2: limpiar caracteres de control y trailing commas
-  var cleaned = text
-    .replace(/[\x00-\x1F\x7F]/g, function(m){ return m === '\n' ? '\n' : m === '\t' ? ' ' : ''; })
-    .replace(/,\s*([}\]])/g, '$1')
-    .replace(/([{,])\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-  try { return JSON.parse(cleaned); } catch(e2) {}
-  // Intento 3: Function eval seguro
+  // Paso 4: limpiar trailing commas y reintentar
+  var t2 = text.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
+  try { return JSON.parse(t2); } catch(e2) {}
+  // Paso 5: eval seguro
   try {
-    var result = Function('"use strict"; return (' + cleaned + ')')();
-    if(typeof result === 'object' && result !== null) return result;
+    var r = (new Function('return (' + t2 + ')'))();
+    if(r && typeof r === 'object') return r;
   } catch(e3) {}
-  // Intento 4: extraer campos manualmente con regex
-  try {
-    var obj = {};
-    var fieldRe = /"([^"]+)"\s*:\s*("([^"]*)"|\[([^\]]+)\])/g;
-    var match;
-    while((match = fieldRe.exec(text)) !== null) {
-      if(match[3] !== undefined) obj[match[1]] = match[3];
-      else if(match[4] !== undefined) {
-        obj[match[1]] = match[4].split(',').map(function(s){ return s.trim().replace(/^"|"$/g,''); });
-      }
-    }
-    if(Object.keys(obj).length > 0) return obj;
-  } catch(e4) {}
-  throw new Error('JSON malformado despues de 4 intentos de parseo');
+  // Paso 6: extraer campos con regex simple
+  var obj = {};
+  var re1 = /"(\w+)"\s*:\s*"([^"]*)"/g;
+  var m;
+  while((m = re1.exec(text)) !== null) { obj[m[1]] = m[2]; }
+  var re2 = /"(\w+)"\s*:\s*\[([^\]]+)\]/g;
+  while((m = re2.exec(text)) !== null) {
+    obj[m[1]] = m[2].split(',').map(function(s){ return s.trim().replace(/^"|"$/g,''); });
+  }
+  if(Object.keys(obj).length > 0) return obj;
+  throw new Error('JSON malformado - intenta de nuevo');
 }
 
 function perToggle(el, val, grid, max) {
@@ -2929,13 +2919,8 @@ function generarPDFSeccion2() {
 }
 
 function goNextSection(currentSecIdx) {
-  const next = getNextSection(currentSecIdx);
-  if(!next) return;
-  toggleGroup(next.group);
-  goSection(next.group, next.sec);
-  const wiz = document.querySelector('#sec'+currentSecIdx+' .wiz-left');
-  if(wiz) wiz.scrollTop = 0;
-  tst('→ ' + next.name);
+  // En el módulo independiente, navegar al tab del consumidor
+  switchTab(2);
 }
 
 function goConsPerfilStep(step) {
@@ -3074,7 +3059,7 @@ async function analizarPerfilConsumidor() {
     const cruce = document.getElementById('cp_cruce_texto');
     if(cruce) cruce.textContent=[p.diagnostico,p.aspiraciones,p.comportamiento,p.recomendacion].filter(Boolean).join(' | ');
     if(result) result.style.display='block';
-    try { goConsPerfilStep(3); } catch(e) {}
+    try { goConsPerfilStep(3); } catch(e) { console.warn('nav:', e); }
     tst('Perfil del consumidor analizado ✦');
   } catch(err) {
     clearInterval(anim); if(loading) loading.style.display='none';
